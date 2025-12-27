@@ -1,0 +1,40 @@
+
+
+import 'package:rapidito_user/data/api_client.dart';
+import 'package:rapidito_user/features/my_offer/domain/repositories/offer_repository_interface.dart';
+import 'package:rapidito_user/util/app_constants.dart';
+
+class OfferRepository implements OfferRepositoryInterface{
+  final ApiClient apiClient;
+  OfferRepository({required this.apiClient});
+
+  @override
+  Future add(value) {
+    // TODO: implement add
+    throw UnimplementedError();
+  }
+
+  @override
+  Future delete(String id) {
+    // TODO: implement delete
+    throw UnimplementedError();
+  }
+
+  @override
+  Future get(String id) {
+    // TODO: implement get
+    throw UnimplementedError();
+  }
+
+  @override
+  Future getList({int? offset = 1}) async{
+    return await apiClient.getData('${AppConstants.bestOfferList}$offset');
+  }
+
+  @override
+  Future update(value, {int? id}) {
+    // TODO: implement update
+    throw UnimplementedError();
+  }
+
+}
