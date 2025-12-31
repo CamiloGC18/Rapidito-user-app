@@ -1,14 +1,20 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rapidito.user">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <queries>
         <intent>
@@ -30,12 +36,13 @@
 
    <application
         android:label="Rapidito"
-       android:requestLegacyExternalStorage="true"
+        android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         android:extractNativeLibs="true"
-        android:fullBackupOnly="false">
+        android:fullBackupOnly="false"
+        android:usesCleartextTraffic="true">
 
 
        <meta-data android:name="com.google.android.geo.API_KEY"
@@ -59,7 +66,7 @@
               />
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="6amTech" />
+                android:value="rapidito" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -69,7 +76,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="drivemond"
+                    android:scheme="rapidito"
                     android:host="open" />
             </intent-filter>
         </activity>
@@ -78,6 +85,6 @@
             android:value="2" />
        <meta-data
            android:name="com.google.firebase.messaging.default_notification_channel_id"
-           android:value="hexaride" />
+           android:value="rapidito" />
     </application>
 </manifest>

@@ -4,7 +4,7 @@ class Images {
   static const String signUpScreenLogo = 'assets/image/sign_up_logo.png';
   static const String otpScreenLogo = 'assets/image/otp_screen_logo.png';
   static const String forgotPasswordLogo = 'assets/image/forgot_password.png';
-  static const String saudi = 'assets/image/saudi.png';
+  static const String spain = 'assets/image/spain.png';
   static const String unitedKingdom = 'assets/image/united_kingdom.png';
   static const String placeholder = 'assets/image/placeholder.jpg';
   static const String personPlaceholder = 'assets/image/person_placeholder.png';

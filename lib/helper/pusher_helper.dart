@@ -17,11 +17,21 @@ import 'package:rapidito_user/util/app_constants.dart';
 class PusherHelper {
   static PusherChannelsClient?  pusherClient;
   static void initializePusher() async{
+    String? webSocketPort = Get.find<ConfigController>().config?.webSocketPort;
+    int port = 6001;
+    if (webSocketPort != null && webSocketPort.isNotEmpty) {
+      try {
+        port = int.parse(webSocketPort);
+      } catch (e) {
+        port = 6001;
+      }
+    }
+    
     PusherChannelsOptions testOptions = PusherChannelsOptions.fromHost(
       host: Get.find<ConfigController>().config!.webSocketUrl ?? '',
       scheme: Get.find<ConfigController>().config!.websocketScheme == 'https' ? 'wss' : 'ws',
       key: Get.find<ConfigController>().config!.webSocketKey ?? '',
-      port: int.parse(Get.find<ConfigController>().config?.webSocketPort ?? '6001'),
+      port: port,
     );
 
     pusherClient = PusherChannelsClient.websocket(
