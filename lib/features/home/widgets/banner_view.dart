@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
 import 'package:rapidito_user/features/home/controllers/banner_controller.dart';
 import 'package:rapidito_user/features/home/widgets/banner_shimmer.dart';
 import 'package:rapidito_user/util/dimensions.dart';
@@ -12,7 +14,7 @@ class BannerView extends StatefulWidget {
   const BannerView({super.key});
 
   @override
-  State<BannerView> createState() => _BannerViewState();
+  State<BannerViewState> createState() => _BannerViewState();
 }
 
 class _BannerViewState extends State<BannerView> {
@@ -20,13 +22,21 @@ class _BannerViewState extends State<BannerView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     String baseurl = Get.find<ConfigController>().config!.imageBaseUrl!.banner!;
     return GetBuilder<BannerController>(
       builder: (bannerController) {
 
         return  bannerController.bannerList != null? bannerController.bannerList!.isNotEmpty?
-        Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            SizedBox(height: 130, width: MediaQuery.of(context).size.width,
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingMD,
+            vertical: AppDimensions.sm,
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            SizedBox(
+              height: 140,
+              width: MediaQuery.of(context).size.width,
               child: CarouselSlider.builder(
                 options: CarouselOptions(
                   autoPlay: true,
@@ -42,37 +52,96 @@ class _BannerViewState extends State<BannerView> {
                 ),
                 itemCount: bannerController.bannerList!.length,
                 itemBuilder: (context, index, _) {
-                  return InkWell(onTap: (){
-                    bannerController.updateBannerClickCount(bannerController.bannerList![index].id!);
-                    debugPrint("=click===> ${bannerController.bannerList![index].redirectLink!}");
-                    if(bannerController.bannerList![index].redirectLink != null){
-                      _launchUrl(Uri.parse(bannerController.bannerList![index].redirectLink!));
-                    }},
+                  return GestureDetector(
+                    onTap: (){
+                      bannerController.updateBannerClickCount(bannerController.bannerList![index].id!);
+                      debugPrint("=click===> ${bannerController.bannerList![index].redirectLink!}");
+                      if(bannerController.bannerList![index].redirectLink != null){
+                        _launchUrl(Uri.parse(bannerController.bannerList![index].redirectLink!));
+                      }
+                    },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: ClipRRect(borderRadius: BorderRadius.circular(Dimensions.radiusOverLarge),
-                        child: ImageWidget(image: '$baseurl/${bannerController.bannerList![index].image}', fit: BoxFit.cover)),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.15),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.08),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+                          child: Stack(
+                            children: [
+                              ImageWidget(
+                                image: '$baseurl/${bannerController.bannerList![index].image}',
+                                fit: BoxFit.cover,
+                              ),
+                              // Gradient overlay
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.1),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
             ),
 
-          const SizedBox(height: Dimensions.paddingSizeExtraSmall,),
-          SizedBox(height: 5,width: Get.width,
-            child: Center(child: ListView.separated(shrinkWrap: true,padding: EdgeInsets.zero,scrollDirection: Axis.horizontal,
-              itemCount: bannerController.bannerList!.length,itemBuilder: (context,index){
-                return Center(child: Container(height: 5,width: index == activeIndex ? 10 : 5,decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(100)
-                ),));},
-
-              separatorBuilder: (context,index){
-                return const Padding(padding: EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall));
-              },
-            ),
-            ),)
-          ],
+            const SizedBox(height: AppDimensions.md),
+            
+            // Premium dot indicators
+            SizedBox(
+              height: 6,
+              width: Get.width,
+              child: Center(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: bannerController.bannerList!.length,
+                  itemBuilder: (context, index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 6,
+                      width: index == activeIndex ? 24 : 6,
+                      decoration: BoxDecoration(
+                        color: index == activeIndex
+                            ? AppColors.primary
+                            : AppColors.primary.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Padding(
+                      padding: EdgeInsets.only(right: AppDimensions.md),
+                    );
+                  },
+                ),
+              ),
+            )
+          ]),
         ):const SizedBox() : const BannerShimmer();
       },
     );

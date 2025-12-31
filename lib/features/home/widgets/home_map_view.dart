@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
+import 'package:rapidito_user/config/app_text_styles.dart';
 import 'package:rapidito_user/features/map/controllers/map_controller.dart';
 import 'package:rapidito_user/features/wallet/widget/custom_title.dart';
 import 'package:rapidito_user/theme/theme_controller.dart';
@@ -37,6 +40,8 @@ class HomeMapViewState extends State<HomeMapView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return GetBuilder<MapController>(builder: (mapController) {
       return GetBuilder<LocationController>(builder: (locationController) {
         Completer<GoogleMapController> mapCompleter = Completer<GoogleMapController>();
@@ -45,24 +50,42 @@ class HomeMapViewState extends State<HomeMapView> {
         }
         return mapController.nearestDeliveryManMarkers != null ?
         Padding(
-          padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+          padding: EdgeInsets.only(
+            bottom: AppDimensions.paddingMD,
+            left: AppDimensions.paddingMD,
+            right: AppDimensions.paddingMD,
+          ),
           child: Column(children: [
-            CustomTitle(
-              title: widget.title.tr,
-              color: Get.isDarkMode ? Theme.of(context).textTheme.bodyLarge!.color!.withValues(alpha:0.9) : Theme.of(context).textTheme.bodyLarge!.color,
-              fontSize: Dimensions.fontSizeDefault,
+            Text(
+              widget.title.tr,
+              style: AppTextStyles.headingLarge.copyWith(
+                color: isDarkMode
+                    ? AppColors.darkTextPrimary
+                    : AppColors.lightTextPrimary,
+              ),
             ),
-            const SizedBox(height:Dimensions.paddingSizeSmall),
+            const SizedBox(height: AppDimensions.md),
 
-            Container(height: Get.height * 0.25,
+            Container(
+              height: Get.height * 0.25,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-                border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha:0.3)),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
                 child: GoogleMap(
-                  style: Get.isDarkMode ?
+                  style: isDarkMode ?
                   Get.find<ThemeController>().darkMap :
                   Get.find<ThemeController>().lightMap,
                   markers: mapController.nearestDeliveryManMarkers!.toSet(),

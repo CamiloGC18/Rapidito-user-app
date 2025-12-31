@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
+import 'package:rapidito_user/config/app_text_styles.dart';
 import 'package:rapidito_user/features/home/widgets/voice_search_dialog.dart';
 import 'package:rapidito_user/util/dimensions.dart';
 import 'package:rapidito_user/util/images.dart';
@@ -11,76 +14,81 @@ class HomeSearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: Dimensions.searchBarSize,
-      child: TextField(
-        style: textRegular.copyWith(color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha:0.8)),
-        cursorColor: Theme.of(context).hintColor,
-        autofocus: false,
-        readOnly: true,
-        textAlignVertical: TextAlignVertical.center,
-        textInputAction: TextInputAction.search,
-        decoration: InputDecoration(
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-          // InputBorder? errorBorder,
-          // InputBorder? focusedErrorBorder,
-          // InputBorder? enabledBorder,
-
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal :Dimensions.paddingSizeDefault,
-            vertical:Dimensions.paddingSizeExtraSmall,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:  BorderSide( color: Theme.of(context).primaryColor.withValues(alpha:0.2)),
-          ),
-          isDense: true,
-          hintText: 'where_to_go'.tr,
-          hintStyle: textRegular.copyWith(
-              color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha:0.5),
-          ),
-          suffixIcon: IconButton(
-            color: Theme.of(context).hintColor,
-            onPressed: () {
-              Get.dialog(const VoiceSearchDialog(),barrierDismissible: false);
-            },
-            icon:Image.asset(
-              Images.microPhoneIcon,
-              color: Get.isDarkMode? Theme.of(context).hintColor : null ,
-              height: 20, width: 20,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSize),
+      child: SizedBox(
+        height: Dimensions.searchBarSize,
+        child: GestureDetector(
+          onTap: () => Get.to(() => const SetDestinationScreen()),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+              color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
+              border: Border.all(
+                color: isDarkMode ? AppColors.neutral700 : AppColors.neutral200,
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDarkMode ? 0.2 : 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ),
-          prefixIcon: IconButton(
-            color: Theme.of(context).hintColor,
-            onPressed: () => Get.to(() => const SetDestinationScreen()),
-            icon:Image.asset(
-              Images.homeSearchIcon,
-              color: Get.isDarkMode? Theme.of(context).hintColor : null ,
-              height: 20, width: 20,
+            child: Row(
+              children: [
+                // Icono de búsqueda
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppDimensions.md,
+                  ),
+                  child: Image.asset(
+                    Images.homeSearchIcon,
+                    color: AppColors.primary,
+                    height: 20,
+                    width: 20,
+                  ),
+                ),
+
+                // Hint text premium
+                Expanded(
+                  child: Text(
+                    'where_to_go'.tr,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: isDarkMode
+                          ? AppColors.darkTextHint
+                          : AppColors.lightTextHint,
+                    ),
+                  ),
+                ),
+
+                // Icono de micrófono
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppDimensions.md,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.dialog(
+                        const VoiceSearchDialog(),
+                        barrierDismissible: false,
+                      );
+                    },
+                    child: Image.asset(
+                      Images.microPhoneIcon,
+                      color: AppColors.primary,
+                      height: 20,
+                      width: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        onTap: () => Get.to(() => const SetDestinationScreen()),
       ),
     );
   }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
+import 'package:rapidito_user/config/app_text_styles.dart';
 import 'package:rapidito_user/common_widgets/category_widget.dart';
 import 'package:rapidito_user/features/home/controllers/category_controller.dart';
 import 'package:rapidito_user/features/home/widgets/category_shimmer.dart';
@@ -16,12 +19,15 @@ class CategoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return GetBuilder<CategoryController>(builder: (categoryController){
       return SizedBox(
         height: 105, width: Get.width,
         child: ListView(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
           children: [
             categoryController.categoryList != null ?
             categoryController.categoryList!.isNotEmpty ?
@@ -38,50 +44,82 @@ class CategoryView extends StatelessWidget {
             const SizedBox() :
             const CategoryShimmer(),
 
+            // Parcel Card mejorado
             Padding(
-              padding: const EdgeInsets.only(right: 5.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: InkWell(
                 onTap: () => Get.to(() =>  const ParcelScreen()),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center,children: [
-                  Container(width: 75, height: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10), color: Theme.of(context).hintColor.withValues(alpha:.15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 75,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
+                        color: AppColors.primary.withOpacity(0.1),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                        child: Image.asset(Images.parcel),
+                      ),
                     ),
-                    margin: const EdgeInsets.only(bottom: 5),
-                    child: Padding(
-                      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                      child: Image.asset(Images.parcel),
+                    Text(
+                      'parcel'.tr,
+                      style: AppTextStyles.labelMedium.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
-                  ),
-                  Text('parcel'.tr, style: textSemiBold.copyWith(
-                    color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha:0.8),
-                    fontSize: Dimensions.fontSizeSmall,
-                  )),
-                ]),
+                  ],
+                ),
               ),
             ),
 
+            // Schedule Trip Card mejorado
             if(Get.find<ConfigController>().config?.scheduleTripStatus ?? false)
             Padding(
-              padding: const EdgeInsets.only(right: 5.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: InkWell(
                 onTap: () => Get.to(() => const SetDestinationScreen(rideType: RideType.scheduleRide)),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center,children: [
-                  Container(width: 75, height: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10), color: Theme.of(context).hintColor.withValues(alpha:.15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 75,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
+                        color: AppColors.success.withOpacity(0.1),
+                        border: Border.all(
+                          color: AppColors.success.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                        child: Image.asset(Images.scheduleTripIcon),
+                      ),
                     ),
-                    margin: const EdgeInsets.only(bottom: 5),
-                    child: Padding(
-                      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                      child: Image.asset(Images.scheduleTripIcon),
+                    Text(
+                      'schedule_trip'.tr,
+                      style: AppTextStyles.labelMedium.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary,
+                      ),
                     ),
-                  ),
-                  Text('schedule_trip'.tr, style: textSemiBold.copyWith(
-                    color: Theme.of(context).textTheme.bodyMedium!.color!.withValues(alpha:0.8),
-                    fontSize: Dimensions.fontSizeSmall,
-                  )),
-                ]),
+                  ],
+                ),
               ),
             ),
           ],

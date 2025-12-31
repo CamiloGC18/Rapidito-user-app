@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
+import 'package:rapidito_user/config/app_text_styles.dart';
 import 'package:rapidito_user/features/auth/controllers/auth_controller.dart';
 import 'package:rapidito_user/features/home/widgets/banner_view.dart';
 import 'package:rapidito_user/features/home/widgets/best_offers_widget.dart';
@@ -56,6 +59,19 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'good_evening'.tr;
     } else {
       return 'good_night'.tr;
+    }
+  }
+
+  String getGreetingEmoji() {
+    var timeNow = DateTime.now().hour;
+    if (timeNow <= 12) {
+      return '👋';
+    } else if ((timeNow > 12) && (timeNow <= 16)) {
+      return '😊';
+    } else if ((timeNow > 16) && (timeNow < 20)) {
+      return '🌆';
+    } else {
+      return '🌙';
     }
   }
 
@@ -145,10 +161,15 @@ class _HomeScreenState extends State<HomeScreen> {
       body: GetBuilder<ProfileController>(builder: (profileController) {
         return GetBuilder<RideController>(builder: (rideController) {
           return GetBuilder<ParcelController>(builder: (parcelController) {
+            final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+            
             return BodyWidget(
               appBar: AppBarWidget(
-                title: '${greetingMessage()}, ${profileController.customerFirstName()}',
-                showBackButton: false, isHome: true, fontSize: Dimensions.fontSizeLarge,
+                title: '${getGreetingEmoji()} ${greetingMessage()}',
+                subTitle: profileController.customerFirstName(),
+                showBackButton: false,
+                isHome: true,
+                fontSize: Dimensions.fontSizeLarge,
               ),
               body: RefreshIndicator(
                 onRefresh: () async {
@@ -218,52 +239,77 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottom:rideController.biddingList.isEmpty && ((rideController.runningRideList?.data?.length ?? 0) == 0) ? Get.height * 0.08 : 0
             ),
             child: JustTheTooltip(
-              backgroundColor: Get.isDarkMode ?
-              Theme.of(context).primaryColor :
-              Theme.of(context).textTheme.bodyMedium!.color,
+              backgroundColor: AppColors.primary,
               controller: parcelDeliveryToolTip,
               preferredDirection: AxisDirection.right,
               tailLength: 10,
               tailBaseWidth: 20,
-              content: Container(width: 150,
-                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              content: Container(
+                width: 150,
+                padding: AppDimensions.paddingSM,
                 child: Text(
                   'parcel_delivery'.tr,
-                  style: textRegular.copyWith(
-                    color: Colors.white, fontSize: Dimensions.fontSizeDefault,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Colors.white,
                   ),
                 ),
               ),
               child: InkWell(
                 onTap: ()=> Get.to(()=> const ParcelListViewScreen(title: 'ongoing_parcel_list')),
                 child: Stack(children: [
-                  Container(height: 38,width: 38,
-                    padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    margin: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                  // Container premium con elevation
+                  Container(
+                    height: 56,
+                    width: 56,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor
+                      shape: BoxShape.circle,
+                      color: AppColors.primary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Image.asset(Images.parcelDeliveryIcon),
+                    child: Center(
+                      child: Image.asset(
+                        Images.parcelDeliveryIcon,
+                        width: 28,
+                        height: 28,
+                      ),
+                    ),
                   ),
 
-                  Positioned(right: 0,top: 0,
-                    child: Container(height: 20,width: 20,
+                  // Badge premium
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      height: 24,
+                      width: 24,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).cardColor
-                      ),
-
-                      child: Center(
-                        child: Container(height: 18,width: 18,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Theme.of(context).colorScheme.error
+                        shape: BoxShape.circle,
+                        color: AppColors.error,
+                        border: Border.all(
+                          color: Get.isDarkMode ? AppColors.darkCard : AppColors.lightCard,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.error.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
                           ),
-                          child: Center(child: Text(
-                            '${Get.find<ParcelController>().parcelListModel?.totalSize}',
-                            style: textRegular.copyWith(color: Theme.of(context).cardColor,fontSize: Dimensions.fontSizeSmall),
-                          )),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${Get.find<ParcelController>().parcelListModel?.totalSize}',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -279,52 +325,77 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: EdgeInsets.only(bottom: rideController.biddingList.isEmpty ? Get.height * 0.08 : 0),
             child: JustTheTooltip(
-              backgroundColor: Get.isDarkMode ?
-              Theme.of(context).primaryColor :
-              Theme.of(context).textTheme.bodyMedium!.color,
+              backgroundColor: AppColors.primary,
               controller: rideShareToolTip,
               preferredDirection: AxisDirection.right,
               tailLength: 10,
               tailBaseWidth: 20,
-              content: Container(width: 100,
-                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              content: Container(
+                width: 100,
+                padding: AppDimensions.paddingSM,
                 child: Text(
                   'ride_share'.tr,
-                  style: textRegular.copyWith(
-                    color: Colors.white, fontSize: Dimensions.fontSizeDefault,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Colors.white,
                   ),
                 ),
               ),
               child: InkWell(
                 onTap: ()=> Get.to(()=> const RideListViewScreen()),
                 child: Stack(children: [
-                  Container(height: 38,width: 38,
-                    padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    margin: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                  // Container premium con elevation
+                  Container(
+                    height: 56,
+                    width: 56,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor
+                      shape: BoxShape.circle,
+                      color: AppColors.primary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: Image.asset(Images.rideShareIcon),
+                    child: Center(
+                      child: Image.asset(
+                        Images.rideShareIcon,
+                        width: 28,
+                        height: 28,
+                      ),
+                    ),
                   ),
 
-                  Positioned(right: 0,top: 0,
-                    child: Container(height: 20,width: 20,
+                  // Badge premium
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      height: 24,
+                      width: 24,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).cardColor
-                      ),
-
-                      child: Center(
-                        child: Container(height: 18,width: 18,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Theme.of(context).colorScheme.error
+                        shape: BoxShape.circle,
+                        color: AppColors.error,
+                        border: Border.all(
+                          color: Get.isDarkMode ? AppColors.darkCard : AppColors.lightCard,
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.error.withOpacity(0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
                           ),
-                          child: Center(child: Text(
-                            '${rideController.runningRideList?.data?.length}',
-                            style: textRegular.copyWith(color: Theme.of(context).cardColor,fontSize: Dimensions.fontSizeSmall),
-                          )),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${rideController.runningRideList?.data?.length}',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -357,29 +428,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
               child: Stack(children: [
-                Container(height: 38,width: 38,
-                  padding: EdgeInsets.all(Dimensions.paddingSizeSeven),
-                  margin: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                // Container premium con elevation
+                Container(
+                  height: 56,
+                  width: 56,
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).primaryColor
+                    shape: BoxShape.circle,
+                    color: AppColors.primary,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  child: Image.asset(Images.biddingIcon),
+                  child: Center(
+                    child: Image.asset(
+                      Images.biddingIcon,
+                      width: 28,
+                      height: 28,
+                    ),
+                  ),
                 ),
 
-                Positioned(right: 0,top: 6,
-                  child: Container(height: 12,width: 12,
+                // Badge premium - indicador de animación
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    height: 12,
+                    width: 12,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).cardColor
+                      shape: BoxShape.circle,
+                      color: AppColors.error,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.error.withOpacity(0.5),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Center(child: Container(
-                      height: 10,width: 10,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).colorScheme.error
-                      ),
-                    )),
                   ),
                 )
               ]),

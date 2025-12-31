@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:rapidito_user/common_widgets/expandable_bottom_sheet.dart';
+import 'package:rapidito_user/config/app_colors.dart';
+import 'package:rapidito_user/config/app_dimensions.dart';
+import 'package:rapidito_user/config/map_style_config.dart';
 import 'package:rapidito_user/features/map/widget/custom_icon_card.dart';
 import 'package:rapidito_user/features/map/widget/discount_coupon_bottomsheet.dart';
 import 'package:rapidito_user/features/safety_setup/controllers/safety_alert_controller.dart';
@@ -23,6 +26,7 @@ import 'package:rapidito_user/features/ride/controllers/ride_controller.dart';
 import 'package:rapidito_user/common_widgets/app_bar_widget.dart';
 import 'package:rapidito_user/common_widgets/body_widget.dart';
 import 'package:rapidito_user/common_widgets/button_widget.dart';
+import 'package:rapidito_user/common_widgets/premium_map_widgets.dart';
 import 'package:rapidito_user/util/styles.dart';
 
 
@@ -114,7 +118,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver{
                           padding: EdgeInsets.only(bottom: mapController.sheetHeight - 20),
                           child: GoogleMap(
                               style: Get.isDarkMode ?
-                              Get.find<ThemeController>().darkMap : Get.find<ThemeController>().lightMap,
+                              MapStyleConfig.darkMapStyle : MapStyleConfig.lightMapStyle,
                               initialCameraPosition:  CameraPosition(
                                 target:  rideController.tripDetails?.pickupCoordinates != null ?
                                 LatLng(
@@ -126,6 +130,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver{
                               ),
                               onMapCreated: (GoogleMapController controller) {
                                 mapController.mapController = controller;
+                                _applyMapStyle(controller);
                                 if(
                                 rideController.currentRideState.name == AppConstants.findingRider ||
                                     rideController.currentRideState.name == AppConstants.riseFare
@@ -156,6 +161,26 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver{
                               trafficEnabled: mapController.isTrafficEnable,
                               indoorViewEnabled: true,
                               mapToolbarEnabled: true),
+                        ),
+
+                        // Premium Map Controls
+                        Positioned(
+                          bottom: Get.height * 0.34,
+                          right: AppDimensions.paddingMD,
+                          child: PremiumMapControls(
+                            mapController: _mapController,
+                            isTrafficEnabled: mapController.isTrafficEnable,
+                            onTrafficToggled: () => mapController.toggleTrafficView(),
+                            onLocationPressed: () async {
+                              GetBuilder<LocationController>(builder: (locationController) {
+                                locationController.getCurrentLocation(mapController: _mapController);
+                                return SizedBox.shrink();
+                              });
+                              await _mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                                CameraPosition(target: Get.find<LocationController>().initialPosition, zoom: 16),
+                              ));
+                            },
+                          ),
                         ),
 
                         if(widget.isShowCurrentPosition)
@@ -387,4 +412,13 @@ void _setMapCurrentRoutes(){
       }
     }
   });
+}
+  /// Aplica el estilo premium del mapa
+  void _applyMapStyle(GoogleMapController controller) {
+    if (Get.isDarkMode) {
+      controller.setMapStyle(MapStyleConfig.darkMapStyle);
+    } else {
+      controller.setMapStyle(MapStyleConfig.lightMapStyle);
+    }
+  }
 }
